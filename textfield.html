@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Text Field</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Text Field</h1>
+    <p class="subtitle">Enter at least 3 characters, then verify.</p>
+    <div class="card">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter a username">
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var value = document.getElementById('username').value.trim();
+        if (value.length === 0) {
+            showResult('result', 'Verification failed: the text field is empty.', false);
+        } else if (value.length < 3) {
+            showResult('result', 'Verification failed: enter at least 3 characters.', false);
+        } else {
+            showResult('result', 'Verification passed: text field contains "' + value + '".', true);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Select Lists</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Select Lists</h1>
+    <p class="subtitle">Pick one language and at least two skills from the multi-select list, then verify.</p>
+    <div class="card">
+        <label for="language">Single select list (grouped)</label>
+        <select id="language" size="5">
+            <optgroup label="Backend">
+                <option value="Java">Java</option>
+                <option value="Python">Python</option>
+                <option value="Go">Go</option>
+            </optgroup>
+            <optgroup label="Frontend">
+                <option value="JavaScript">JavaScript</option>
+                <option value="TypeScript">TypeScript</option>
+            </optgroup>
+        </select>
+
+        <label for="skills" style="margin-top:20px">Multi select list (Ctrl/Shift + click)</label>
+        <select id="skills" multiple size="6">
+            <option value="Selenium">Selenium</option>
+            <option value="Playwright">Playwright</option>
+            <option value="Cypress">Cypress</option>
+            <option value="JUnit">JUnit</option>
+            <option value="TestNG">TestNG</option>
+            <option value="Appium" disabled>Appium (disabled)</option>
+        </select>
+
+        <p class="counter" id="counter" data-selected="0">Skills selected: 0</p>
+        <button id="select-all-skills" type="button" class="secondary">Select all skills</button>
+        <button id="clear-skills" type="button" class="secondary">Clear skills</button>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var skills = document.getElementById('skills');
+
+    function selectedSkills() {
+        return Array.prototype.slice.call(skills.selectedOptions).map(function (o) { return o.value; });
+    }
+
+    function refreshCounter() {
+        var count = selectedSkills().length;
+        var counter = document.getElementById('counter');
+        counter.textContent = 'Skills selected: ' + count;
+        counter.setAttribute('data-selected', String(count));
+    }
+
+    skills.addEventListener('change', refreshCounter);
+
+    document.getElementById('select-all-skills').addEventListener('click', function () {
+        Array.prototype.forEach.call(skills.options, function (option) {
+            if (!option.disabled) { option.selected = true; }
+        });
+        refreshCounter();
+    });
+
+    document.getElementById('clear-skills').addEventListener('click', function () {
+        Array.prototype.forEach.call(skills.options, function (option) { option.selected = false; });
+        refreshCounter();
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var language = document.getElementById('language').value;
+        var chosen = selectedSkills();
+
+        if (!language && chosen.length === 0) {
+            showResult('result', 'Verification failed: nothing selected in either list.', false);
+        } else if (!language) {
+            showResult('result', 'Verification failed: no language selected in the single select list.', false);
+        } else if (chosen.length < 2) {
+            showResult('result', 'Verification failed: select at least 2 skills (currently ' + chosen.length + ').', false);
+        } else {
+            showResult('result', 'Verification passed: language = "' + language + '", skills = ' + chosen.join(', ') + '.', true);
+        }
+    });
+
+    refreshCounter();
+</script>
+</body>
+</html>

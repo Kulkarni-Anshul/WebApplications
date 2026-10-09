@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Combo Box</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Combo Box</h1>
+    <p class="subtitle">Pick a suggestion or type your own browser name, then verify.</p>
+    <div class="card">
+        <label for="browser">Browser (editable combo box)</label>
+        <input type="text" id="browser" list="browser-options" placeholder="Type or pick a browser">
+        <datalist id="browser-options">
+            <option value="Chrome"></option>
+            <option value="Firefox"></option>
+            <option value="Edge"></option>
+            <option value="Safari"></option>
+        </datalist>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var suggestions = ['Chrome', 'Firefox', 'Edge', 'Safari'];
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var value = document.getElementById('browser').value.trim();
+        if (value.length === 0) {
+            showResult('result', 'Verification failed: the combo box is empty.', false);
+            return;
+        }
+        var isSuggestion = suggestions.some(function (option) {
+            return option.toLowerCase() === value.toLowerCase();
+        });
+        var source = isSuggestion ? 'a listed suggestion' : 'a custom value';
+        showResult('result', 'Verification passed: "' + value + '" was entered as ' + source + '.', true);
+    });
+</script>
+</body>
+</html>

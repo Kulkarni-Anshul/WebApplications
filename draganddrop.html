@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drag and Drop</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Drag and Drop</h1>
+    <p class="subtitle">Drag all three items from Source into Target, then verify.</p>
+    <div class="card">
+        <label>Move the items</label>
+        <div class="drag-area">
+            <div class="drop-zone" id="source" data-zone="source">
+                <h2>Source</h2>
+                <div class="draggable" id="item-1" draggable="true">Item 1</div>
+                <div class="draggable" id="item-2" draggable="true">Item 2</div>
+                <div class="draggable" id="item-3" draggable="true">Item 3</div>
+            </div>
+            <div class="drop-zone" id="target" data-zone="target">
+                <h2>Target</h2>
+            </div>
+        </div>
+        <p class="hint">Tip: you can also click an item to move it between zones.</p>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var source = document.getElementById('source');
+    var target = document.getElementById('target');
+    var zones = [source, target];
+    var draggedId = null;
+
+    document.querySelectorAll('.draggable').forEach(function (item) {
+        item.addEventListener('dragstart', function (event) {
+            draggedId = item.id;
+            event.dataTransfer.setData('text/plain', item.id);
+            event.dataTransfer.effectAllowed = 'move';
+        });
+        item.addEventListener('click', function () {
+            var destination = item.parentElement === source ? target : source;
+            destination.appendChild(item);
+        });
+    });
+
+    zones.forEach(function (zone) {
+        zone.addEventListener('dragover', function (event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            zone.classList.add('over');
+        });
+        zone.addEventListener('dragleave', function () {
+            zone.classList.remove('over');
+        });
+        zone.addEventListener('drop', function (event) {
+            event.preventDefault();
+            zone.classList.remove('over');
+            var id = event.dataTransfer.getData('text/plain') || draggedId;
+            var item = id ? document.getElementById(id) : null;
+            if (item) {
+                zone.appendChild(item);
+            }
+            draggedId = null;
+        });
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var dropped = target.querySelectorAll('.draggable');
+        if (dropped.length === 0) {
+            showResult('result', 'Verification failed: no item was dropped into Target.', false);
+            return;
+        }
+        var names = Array.prototype.map.call(dropped, function (item) {
+            return item.textContent.trim();
+        }).join(', ');
+        if (dropped.length < 3) {
+            showResult('result', 'Verification failed: only ' + dropped.length + ' of 3 items dropped (' + names + ').', false);
+            return;
+        }
+        showResult('result', 'Verification passed: all 3 items dropped into Target (' + names + ').', true);
+    });
+</script>
+</body>
+</html>

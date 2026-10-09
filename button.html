@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Button</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Button</h1>
+    <p class="subtitle">Click the action button at least once, then verify.</p>
+    <div class="card">
+        <label for="action-button">Action</label>
+        <button id="action-button" type="button" style="margin-top:0">Click me</button>
+        <p class="counter" id="counter" data-clicks="0">Clicks: 0</p>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var clicks = 0;
+    document.getElementById('action-button').addEventListener('click', function () {
+        clicks += 1;
+        var counter = document.getElementById('counter');
+        counter.textContent = 'Clicks: ' + clicks;
+        counter.setAttribute('data-clicks', String(clicks));
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        if (clicks === 0) {
+            showResult('result', 'Verification failed: the button was never clicked.', false);
+        } else {
+            showResult('result', 'Verification passed: the button was clicked ' + clicks + ' time(s).', true);
+        }
+    });
+</script>
+</body>
+</html>

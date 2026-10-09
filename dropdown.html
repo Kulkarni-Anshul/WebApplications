@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drop Down</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Drop Down</h1>
+    <p class="subtitle">Select a country, then verify the selection.</p>
+    <div class="card">
+        <label for="country">Country</label>
+        <select id="country">
+            <option value="">-- Select a country --</option>
+            <option value="IN">India</option>
+            <option value="US">United States</option>
+            <option value="DE">Germany</option>
+            <option value="JP">Japan</option>
+        </select>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var select = document.getElementById('country');
+        if (!select.value) {
+            showResult('result', 'Verification failed: no country selected.', false);
+        } else {
+            var label = select.options[select.selectedIndex].text;
+            showResult('result', 'Verification passed: selected "' + label + '" (' + select.value + ').', true);
+        }
+    });
+</script>
+</body>
+</html>

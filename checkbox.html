@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkbox</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Checkbox</h1>
+    <p class="subtitle">Select at least two hobbies and accept the terms, then verify.</p>
+    <div class="card">
+        <label>Hobbies (multiple choice)</label>
+        <div class="option-group">
+            <label class="option"><input type="checkbox" id="hobby-reading" name="hobby" value="Reading"> Reading</label>
+            <label class="option"><input type="checkbox" id="hobby-music" name="hobby" value="Music"> Music</label>
+            <label class="option"><input type="checkbox" id="hobby-sports" name="hobby" value="Sports"> Sports</label>
+            <label class="option"><input type="checkbox" id="hobby-travel" name="hobby" value="Travel"> Travel</label>
+        </div>
+
+        <label style="margin-top:20px">Select all</label>
+        <div class="option-group">
+            <label class="option"><input type="checkbox" id="select-all"> Toggle every hobby</label>
+        </div>
+
+        <label style="margin-top:20px">Agreement</label>
+        <div class="option-group">
+            <label class="option"><input type="checkbox" id="terms"> I accept the terms and conditions</label>
+            <label class="option"><input type="checkbox" id="newsletter" disabled> Newsletter (disabled checkbox)</label>
+        </div>
+
+        <p class="counter" id="counter" data-checked="0">Hobbies selected: 0</p>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var hobbies = Array.prototype.slice.call(document.querySelectorAll('input[name="hobby"]'));
+    var selectAll = document.getElementById('select-all');
+
+    function selectedHobbies() {
+        return hobbies.filter(function (box) { return box.checked; });
+    }
+
+    function refreshCounter() {
+        var count = selectedHobbies().length;
+        var counter = document.getElementById('counter');
+        counter.textContent = 'Hobbies selected: ' + count;
+        counter.setAttribute('data-checked', String(count));
+        selectAll.checked = count === hobbies.length;
+        selectAll.indeterminate = count > 0 && count < hobbies.length;
+    }
+
+    hobbies.forEach(function (box) { box.addEventListener('change', refreshCounter); });
+
+    selectAll.addEventListener('change', function () {
+        hobbies.forEach(function (box) { box.checked = selectAll.checked; });
+        refreshCounter();
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var chosen = selectedHobbies().map(function (box) { return box.value; });
+        var accepted = document.getElementById('terms').checked;
+
+        if (chosen.length === 0) {
+            showResult('result', 'Verification failed: no hobby checkbox is selected.', false);
+        } else if (chosen.length < 2) {
+            showResult('result', 'Verification failed: select at least 2 hobbies (only "' + chosen[0] + '" selected).', false);
+        } else if (!accepted) {
+            showResult('result', 'Verification failed: the terms checkbox is not accepted.', false);
+        } else {
+            showResult('result', 'Verification passed: ' + chosen.length + ' hobbies selected (' + chosen.join(', ') + ') and terms accepted.', true);
+        }
+    });
+
+    refreshCounter();
+</script>
+</body>
+</html>

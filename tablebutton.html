@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Button Inside HTML Table</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Button Inside HTML Table</h1>
+    <p class="subtitle">Approve at least one row and delete at least one row, then verify.</p>
+    <div class="card">
+        <label>Employee records</label>
+        <table id="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+            <tr id="row-101" data-id="101" data-status="Pending">
+                <td>101</td>
+                <td>Asha Rao</td>
+                <td>Engineering</td>
+                <td class="status-cell">Pending</td>
+                <td>
+                    <button type="button" class="row-button approve" data-action="approve" data-id="101">Approve</button>
+                    <button type="button" class="row-button delete" data-action="delete" data-id="101">Delete</button>
+                </td>
+            </tr>
+            <tr id="row-102" data-id="102" data-status="Pending">
+                <td>102</td>
+                <td>Vikram Shah</td>
+                <td>Finance</td>
+                <td class="status-cell">Pending</td>
+                <td>
+                    <button type="button" class="row-button approve" data-action="approve" data-id="102">Approve</button>
+                    <button type="button" class="row-button delete" data-action="delete" data-id="102">Delete</button>
+                </td>
+            </tr>
+            <tr id="row-103" data-id="103" data-status="Pending">
+                <td>103</td>
+                <td>Meera Nair</td>
+                <td>Quality</td>
+                <td class="status-cell">Pending</td>
+                <td>
+                    <button type="button" class="row-button approve" data-action="approve" data-id="103">Approve</button>
+                    <button type="button" class="row-button delete" data-action="delete" data-id="103">Delete</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="counter" id="counter" data-rows="3" data-approved="0" data-deleted="0">Rows: 3 | Approved: 0 | Deleted: 0</p>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    var approved = [];
+    var deleted = [];
+
+    function refreshCounter() {
+        var rows = document.querySelectorAll('#table-body tr').length;
+        var counter = document.getElementById('counter');
+        counter.textContent = 'Rows: ' + rows + ' | Approved: ' + approved.length + ' | Deleted: ' + deleted.length;
+        counter.setAttribute('data-rows', String(rows));
+        counter.setAttribute('data-approved', String(approved.length));
+        counter.setAttribute('data-deleted', String(deleted.length));
+    }
+
+    document.getElementById('table-body').addEventListener('click', function (event) {
+        var button = event.target.closest('.row-button');
+        if (!button) { return; }
+
+        var id = button.getAttribute('data-id');
+        var row = document.getElementById('row-' + id);
+
+        if (button.getAttribute('data-action') === 'approve') {
+            if (approved.indexOf(id) === -1) { approved.push(id); }
+            row.setAttribute('data-status', 'Approved');
+            row.querySelector('.status-cell').textContent = 'Approved';
+            row.classList.add('approved-row');
+            button.disabled = true;
+        } else {
+            if (deleted.indexOf(id) === -1) { deleted.push(id); }
+            row.remove();
+        }
+        refreshCounter();
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        if (approved.length === 0 && deleted.length === 0) {
+            showResult('result', 'Verification failed: no table row button was clicked.', false);
+        } else if (approved.length === 0) {
+            showResult('result', 'Verification failed: no row approved (deleted rows: ' + deleted.join(', ') + ').', false);
+        } else if (deleted.length === 0) {
+            showResult('result', 'Verification failed: no row deleted (approved rows: ' + approved.join(', ') + ').', false);
+        } else {
+            showResult('result', 'Verification passed: approved row(s) ' + approved.join(', ') +
+                ' and deleted row(s) ' + deleted.join(', ') + '. Remaining rows: ' +
+                document.querySelectorAll('#table-body tr').length + '.', true);
+        }
+    });
+
+    refreshCounter();
+</script>
+</body>
+</html>

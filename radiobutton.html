@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Radio Button</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <h1>Radio Button</h1>
+    <p class="subtitle">Pick one option from each group, then verify.</p>
+    <div class="card">
+        <label>Delivery speed</label>
+        <div class="option-group">
+            <label class="option"><input type="radio" name="delivery" id="delivery-standard" value="Standard"> Standard (5 days)</label>
+            <label class="option"><input type="radio" name="delivery" id="delivery-express" value="Express"> Express (2 days)</label>
+            <label class="option"><input type="radio" name="delivery" id="delivery-overnight" value="Overnight"> Overnight</label>
+            <label class="option"><input type="radio" name="delivery" id="delivery-pickup" value="Pickup" disabled> Store pickup (disabled)</label>
+        </div>
+
+        <label style="margin-top:20px">Payment method</label>
+        <div class="option-group">
+            <label class="option"><input type="radio" name="payment" id="payment-card" value="Credit card"> Credit card</label>
+            <label class="option"><input type="radio" name="payment" id="payment-upi" value="UPI"> UPI</label>
+            <label class="option"><input type="radio" name="payment" id="payment-cod" value="Cash on delivery"> Cash on delivery</label>
+        </div>
+
+        <p class="counter" id="counter" data-selected="0">Groups answered: 0 of 2</p>
+        <button id="verify-button" type="button">Verify</button>
+        <div class="result" id="result" data-status="none">No verification run yet.</div>
+    </div>
+</main>
+<script src="js/verify.js"></script>
+<script>
+    function selectedValue(groupName) {
+        var picked = document.querySelector('input[name="' + groupName + '"]:checked');
+        return picked ? picked.value : null;
+    }
+
+    function refreshCounter() {
+        var count = ['delivery', 'payment'].filter(function (g) { return selectedValue(g) !== null; }).length;
+        var counter = document.getElementById('counter');
+        counter.textContent = 'Groups answered: ' + count + ' of 2';
+        counter.setAttribute('data-selected', String(count));
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+        radio.addEventListener('change', refreshCounter);
+    });
+
+    document.getElementById('verify-button').addEventListener('click', function () {
+        var delivery = selectedValue('delivery');
+        var payment = selectedValue('payment');
+
+        if (!delivery && !payment) {
+            showResult('result', 'Verification failed: no radio button is selected in either group.', false);
+        } else if (!delivery) {
+            showResult('result', 'Verification failed: no delivery speed selected.', false);
+        } else if (!payment) {
+            showResult('result', 'Verification failed: no payment method selected.', false);
+        } else {
+            showResult('result', 'Verification passed: delivery = "' + delivery + '", payment = "' + payment + '".', true);
+        }
+    });
+
+    refreshCounter();
+</script>
+</body>
+</html>
